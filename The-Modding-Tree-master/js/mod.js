@@ -1,9 +1,9 @@
 let modInfo = {
-	name: "The ??? Tree",
-	id: "mymod",
-	author: "nobody",
-	pointsName: "points",
-	modFiles: ["layers.js", "tree.js"],
+	name: "The Game Tree",
+	id: "game",
+	author: "akivn",
+	pointsName: "Game Points",
+	modFiles: ["layers/game.js", "layers/prestige.js", "layers/prestigepower.js", "layers/stellar.js", "layers/choice.js", "layers/quantum.js", "layers/achievement.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -13,14 +13,17 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Literally nothing",
+	num: "1.0",
+	name: "Le Tomozaki-kun Update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.0</h3><br>
-		- Added things.<br>
-		- Added stuff.`
+	<h3>v1.0</h3><br>
+		- Added things up to Quantum (Row 4). Endgame at 100 Increments.<br>
+		- 4 New Prestige Challenges!<br>
+		- 5 New Buyables!<br>
+		- Added some references!<br>
+		- Added 8 achievements up to Prestige Power (Row 2)!`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -43,6 +46,17 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(1)
+	if(hasUpgrade('g', 13)) gain = gain.times(upgradeEffect('g', 13))
+	if(hasUpgrade('g', 14)) gain = gain.times(upgradeEffect('g', 14))
+	if(hasUpgrade('p', 14)) gain = gain.times(upgradeEffect('p', 14))
+	if(hasUpgrade('pp', 11)) gain = gain.times(upgradeEffect('pp', 11))
+	if(hasUpgrade('s', 13)) gain = gain.times(upgradeEffect('s', 13))
+	if(hasUpgrade('c', 11)) gain = gain.times(1e5)
+	gain = gain.times(tmp.g.effect)
+	gain = gain.times(tmp.s.effect)
+	gain = gain.times(tmp.q.increment.effect)
+	gain = gain.times(tmp.ac.effect)
+	if(hasAchievement('ac', 24)) gain = gain.times(achievementEffect('ac', 24))
 	return gain
 }
 
@@ -56,7 +70,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e280000000"))
+	return player.q.increment.gte(new Decimal(100))
 }
 
 
