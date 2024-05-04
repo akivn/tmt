@@ -150,5 +150,6 @@ addLayer("s", {
         // Stage 5, add back in the specific subfeatures you saved earlier
         player[this.layer].milestones.push(...keptMilestones);
     },
+    layerShown(){return hasUpgrade('pp', 13) ||  player[this.layer].unlocked}
 }
 )

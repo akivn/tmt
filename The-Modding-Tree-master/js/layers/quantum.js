@@ -128,5 +128,5 @@ addLayer("q", {
             ],
         },
     },
-    layerShown(){return true}
+    layerShown(){return hasUpgrade('s', 15) ||  player[this.layer].unlocked}
 })
