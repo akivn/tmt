@@ -1,5 +1,5 @@
 let modInfo = {
-	name: "The Game Tree",
+	name: "The Tomozaki Game Tree",
 	id: "game",
 	author: "akivn",
 	pointsName: "Game Points",
