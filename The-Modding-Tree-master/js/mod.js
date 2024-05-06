@@ -3,7 +3,7 @@ let modInfo = {
 	id: "game",
 	author: "akivn",
 	pointsName: "Game Points",
-	modFiles: ["layers/game.js", "layers/prestige.js", "layers/prestigepower.js", "layers/stellar.js", "layers/choice.js", "layers/quantum.js", "layers/achievement.js", "tree.js"],
+	modFiles: ["layers/game.js", "layers/prestige.js", "layers/prestigepower.js", "layers/stellar.js", "layers/choice.js", "layers/quantum.js", "layers/nova.js", "layers/achievement.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -13,17 +13,22 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "1.0",
+	num: "1.001",
 	name: "Le Tomozaki-kun Update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v1.0</h3><br>
+	<h3>v1.0 (The Game Tree)</h3><br>
 		- Added things up to Quantum (Row 4). Endgame at 100 Increments.<br>
 		- 4 New Prestige Challenges!<br>
 		- 5 New Buyables!<br>
 		- Added some references!<br>
-		- Added 8 achievements up to Prestige Power (Row 2)!`
+		- Added 8 achievements up to Prestige Power (Row 2)!
+	<h3>v1.001 (The Tomozaki Game Tree)</h3><br>
+		- kill shinwyste<br>
+		- Added new Quantum buffs and Content!<br>
+		- Quantum Challenges!<br>
+		- Increment Limit and new formulae for buffs! You can now no longer break the game! xd<br>`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -57,6 +62,8 @@ function getPointGen() {
 	gain = gain.times(tmp.q.increment.effect)
 	gain = gain.times(tmp.ac.effect)
 	if(hasAchievement('ac', 24)) gain = gain.times(achievementEffect('ac', 24))
+	if(hasAchievement('ac', 41)) gain = gain.times(2)
+	if(inChallenge('q', 21)) gain = gain.div(player.q.parents)
 	return gain
 }
 
@@ -66,11 +73,15 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
+	function() { 
+		if (inChallenge('q', 21)) return `Current Parents count: ${format(player.q.parents, 0)}`
+		else return
+	}
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.q.increment.gte(new Decimal(100))
+	return player.points.gte(new Decimal('e7110'))
 }
 
 

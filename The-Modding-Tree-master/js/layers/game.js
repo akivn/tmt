@@ -28,7 +28,8 @@ addLayer("g", {
         if(hasUpgrade('c', 12)) mult = mult.times(1e4)
         if(hasChallenge('p', 21)) mult = mult.times(tmp.p.challenges[21].rewardEffect)
         mult = mult.times(tmp.p.effect)
-        if (player.q.buff.gte(1)) mult = mult.times(tmp.q.increment.effect2)
+        if(player.q.buff.gte(1)) mult = mult.times(tmp.q.increment.effect2)
+        if(hasAchievement('ac', 34)) mult = mult.times(achievementEffect('ac', 34))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -54,6 +55,7 @@ addLayer("g", {
             if (hasChallenge('p', 11)) base = base.pow(tmp.p.challenges[11].rewardEffect)
             if (hasUpgrade('s', 14)) base = base.pow(upgradeEffect('s', 14))
             if (inChallenge('p', 22)) base = base.pow(0.5)
+            if (player.q.buff.gte(6)) base = base.pow(tmp.q.increment.effect7)
             if (inChallenge('p', 11)) base = new Decimal(0)
             if (player.p.resetTime <= 0.06) base = new Decimal(0);
             return base;
@@ -64,6 +66,7 @@ addLayer("g", {
             if(hasUpgrade('p', 11)) powa = (player.g.quality).pow(0.14).times(5).minus(4)
             powa = softcap(powa, new Decimal(1e8), base.pow(powa.add(10).log(10).minus(7)).add(new Decimal(1).minus(base)))
             powa = softcap(powa, new Decimal(1e20), 0.5)
+            powa = softcap(powa, new Decimal('1e500'), new Decimal(1).div(powa.div('1e400').log(1e100)))
             return powa
         }
     },
@@ -71,6 +74,7 @@ addLayer("g", {
         perSecond() {
             let base = buyableEffect('g', 12)
             if (hasChallenge('p', 11)) base = base.pow(tmp.p.challenges[11].rewardEffect)
+                if (player.q.buff.gte(6)) base = base.pow(tmp.q.increment.effect7)
             if (inChallenge('p', 11)) base = new Decimal(0)
             if (player.p.resetTime <= 0.06) base = new Decimal(0);
             return base;
@@ -79,7 +83,10 @@ addLayer("g", {
             let powa = player.g.players.pow(0.3)
             let base = new Decimal(0.833)
             powa = softcap(powa, new Decimal(1e3), base.pow(powa.add(10).log(10).minus(2)).add(new Decimal(1).minus(base)))
+            powa = softcap(powa, new Decimal(1e80)), new Decimal(1).div(powa.div(1e60).log(1e20))
             if(hasUpgrade('c', 15)) powa = powa.pow(2.25)
+            powa = softcap(powa, new Decimal(2).pow(1024), 0.4)
+            powa = softcap(powa, new Decimal('1e1300'), 0.05)
             return powa
         }
     },
@@ -274,6 +281,7 @@ addLayer("g", {
                 let b = new Decimal(1.5)
                 if (hasUpgrade('p', 21)) b = new Decimal(1.875)
                 if (hasUpgrade('s', 12)) b = b.add(upgradeEffect('s', 12))
+                if(player.q.buff.gte(5)) b = b.add(tmp.q.increment.effect6)
                 let power = new Decimal(b).pow(x)
                 return power
             },
@@ -301,6 +309,7 @@ addLayer("g", {
                 let b = new Decimal(1.5)
                 if (hasUpgrade('p', 21)) b = new Decimal(1.875)
                 if (hasUpgrade('s', 12)) b = b.add(upgradeEffect('s', 12))
+                if(player.q.buff.gte(5)) b = b.add(tmp.q.increment.effect6)
                 let power = new Decimal(b).pow(x)
                 return power
             },
@@ -365,7 +374,7 @@ addLayer("g", {
         player[this.layer].upgrades.push(...keptUpgrades);
     },
     automate() {
-        for(i=1;i<21;i++){
+        for(i=1;i<51;i++){
             if(player.g.auto1 && hasMilestone('s', 2)) buyBuyable("g",11)
             if(player.g.auto1 && hasMilestone('s', 2)) buyBuyable("g",12)
             if(player.g.auto1 && hasChallenge('p', 21)) buyBuyable("g",21)

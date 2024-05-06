@@ -36,7 +36,8 @@ addLayer("c", {
                 let x = player.c.total
                 let req = new Decimal(1)
                 if (x.lte(4)) req = new Decimal(1e60).pow(x.times(0.2).add(1).pow(1.8))
-                else req = new Decimal(1e310)
+                if (x.gte(5) && player.q.buff.gte(7)) req = new Decimal('1e1200').pow(x.minus(5).times(0.35).add(1).pow(1.5))
+                if (x.gte(5) && player.q.buff.lte(6)) req = new Decimal(1e310)
                 return req
             },
             progress() {
@@ -44,7 +45,7 @@ addLayer("c", {
             },
             unlocked() { return true },
             display() {
-                if (player[this.layer].total.lte(4)) return "Next: "+formatWhole(tmp[this.layer].bars.Choice.req)+" Prestiges ("+format(100-tmp[this.layer].bars.Choice.progress, 3)+"%)"
+                if (player[this.layer].total.lte(4) || player.q.buff.gte(7)) return "Next: "+formatWhole(tmp[this.layer].bars.Choice.req)+" Prestiges ("+format(100-tmp[this.layer].bars.Choice.progress, 3)+"%)"
                 else return "Maxed!"
             },
             fillStyle: {"background-color": "#f244aa"},
@@ -135,12 +136,21 @@ addLayer("c", {
     
         // Stage 3, track which main features you want to keep - milestones
         let keep = [];
+        if(hasMilestone('q', 4)) keep.push('upgrades')
     
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);
     
         // Stage 5, add back in the specific subfeatures you saved earlier
         player[this.layer].upgrades.push(...keptUpgrades);
+        if(hasMilestone('q', 4)) {
+            for(i=11;i<14;i++){ //rows
+                if (hasUpgrade(this.layer, i)) player.c.total = player.c.total.add(1)
+            }
+            for(i=14;i<16;i++){ //rows
+                if (hasUpgrade(this.layer, i)) player.c.total = player.c.total.add(2)
+            }
+        }
     },  
 
     layerShown(){return hasMilestone('s', 5) || player.q.unlocked}

@@ -7,6 +7,7 @@ addLayer("p", {
     startData() { return {
         unlocked: false,
         points: new Decimal(0),
+        keep: true,
     }},
     color: "#4274ad",
     requires: new Decimal(2000), // Can be a function that takes requirement increases into account
@@ -21,6 +22,8 @@ addLayer("p", {
         if (hasUpgrade('g', 34)) mult = mult.times(upgradeEffect('g', 34))
         if (hasUpgrade('pp', 21)) mult = mult.times(upgradeEffect('pp', 21))
         mult = mult.times(tmp.s.effect2)
+        if (player.q.buff.gte(2)) mult = mult.times(tmp.q.increment.effect3)
+        if (hasAchievement('ac', 44)) mult = mult.times(achievementEffect('ac', 44))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -127,19 +130,20 @@ addLayer("p", {
                 return "You cannot gain Quality or Playerbase. <br>Completions: " + challengeCompletions(this.layer, this.id) + "/5"
             },
             goalDescription() {
-                return format(["1e7", "1e11", "5e83", "1e185", "e13000", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) + ' Game Points'
+                return format(["1e7", "1e11", "5e83", "1e185", "e1550", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) + ' Game Points'
             },
             currencyDisplayName: "points",
             currencyInternalName: "points",
             rewardEffect(){
                 let b = new Decimal(0.15).times(new Decimal(challengeCompletions(this.layer, this.id)))
+                if (inChallenge('q', 11)) b = new Decimal(0)
                 return b.add(1)
             },
             rewardDescription: "Gain a +^0.15 boost to Quality and Playerbase every completion.",
             rewardDisplay() {
                 return "^" + format(tmp[this.layer].challenges[this.id].rewardEffect)
             },
-            canComplete() { return player.points.gte(["1e7", "1e11", "5e83", "1e185", "e13000", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) },
+            canComplete() { return player.points.gte(["1e7", "1e11", "5e83", "1e185", "e1550", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) },
             onEnter(){
                 if (challengeCompletions(this.layer, this.id) >= 2) setBuyableAmount('g', 11, new Decimal(0))
                 if (challengeCompletions(this.layer, this.id) >= 2) setBuyableAmount('g', 12, new Decimal(0))
@@ -149,24 +153,26 @@ addLayer("p", {
         },
         12: {
             name: "Prestige for Nothing",
-            completionLimit: 5,
+            completionLimit: 3,
             challengeDescription(){
-                return "Prestiges boost does nothing. <br>Completions: " + challengeCompletions(this.layer, this.id) + "/5"
+                return "Prestiges boost does nothing. <br>Completions: " + challengeCompletions(this.layer, this.id) + "/3"
             },
             goalDescription() {
-                return format(["1e18", "1e33", "1e242", "1e9350", "e13000", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) + ' Game Points'
+                return format(["1e18", "1e33", "1e242", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) + ' Game Points'
             },
             currencyDisplayName: "points",
             currencyInternalName: "points",
             rewardEffect(){
                 let b = new Decimal(0.2).times(new Decimal(challengeCompletions(this.layer, this.id)))
+                b = softcap(b, new Decimal(0.6), 0.25)
+                if (inChallenge('q', 11)) b = new Decimal(0)
                 return b.add(1)
             },
-            rewardDescription: "Gain a +^0.2 boost to Prestige boost every completion",
+            rewardDescription: "Gain a +^0.2 boost to Prestige boost every completion (Softcapped after ^1.6)",
             rewardDisplay() {
                 return "^" + format(tmp[this.layer].challenges[this.id].rewardEffect)
             },
-            canComplete() { return player.points.gte(["1e18", "1e33", "1e242", "1e9350", "e13000", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) },
+            canComplete() { return player.points.gte(["1e18", "1e33", "1e242", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) },
             onEnter(){
                 if (challengeCompletions(this.layer, this.id) >= 1) setBuyableAmount('g', 11, new Decimal(0))
                 if (challengeCompletions(this.layer, this.id) >= 1) setBuyableAmount('g', 12, new Decimal(0))
@@ -176,25 +182,27 @@ addLayer("p", {
         },
         21: {
             name: "Gamelack",
-            completionLimit: 5,
+            completionLimit: 3,
             challengeDescription(){
-                return "The Games gain is raised to ^0.01. <br>Completions: " + challengeCompletions(this.layer, this.id) + "/5"
+                return "The Games gain is raised to ^0.01. <br>Completions: " + challengeCompletions(this.layer, this.id) + "/3"
             },
             goalDescription() {
-                return format(["1e57", "1e100", "1e194", "1e9350", "e13000", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) + ' Game Points'
+                return format(["1e57", "1e100", "1e194", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) + ' Game Points'
             },
             currencyDisplayName: "points",
             currencyInternalName: "points",
             rewardEffect(){
                 let b = player.p.points.add(1).pow(new Decimal(0.12).times(new Decimal(challengeCompletions(this.layer, this.id)).pow(1.5))).minus(1)
                 b = softcap(b, new Decimal(1e20), new Decimal(0.28))
+                b = softcap(b, new Decimal('1e3000'), new Decimal(0.97).pow(b.div('1e2900').log(1e100)).add(0.03))
+                if (inChallenge('q', 11)) b = new Decimal(0)
                 return b.add(1)
             },
             rewardDescription: "Multiply Games gain even more based on your Prestige Point, and unlock Tier 2 Game Buyables' Automator.",
             rewardDisplay() {
                 return format(tmp[this.layer].challenges[this.id].rewardEffect) + "x"
             },
-            canComplete() { return player.points.gte(["1e57", "1e100", "1e194", "1e9350", "e13000", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) },
+            canComplete() { return player.points.gte(["1e57", "1e100", "1e194", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) },
             onEnter(){
                 setBuyableAmount('g', 11, new Decimal(0))
                 setBuyableAmount('g', 12, new Decimal(0))
@@ -205,24 +213,25 @@ addLayer("p", {
         },
         22: {
             name: "Locked Power",
-            completionLimit: 5,
+            completionLimit: 3,
             challengeDescription(){
-                return "Prestige Power gain is disabled, and Quality gain is square rooted. <br>Completions: " + challengeCompletions(this.layer, this.id) + "/5"
+                return "Prestige Power gain is disabled, and Quality gain is square rooted. <br>Completions: " + challengeCompletions(this.layer, this.id) + "/3"
             },
             goalDescription() {
-                return format(["1e142", "1e220", "1e1000", "1e9350", "e13000", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) + ' Game Points'
+                return format(["1e142", "1e220", "1e1000", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) + ' Game Points'
             },
             currencyDisplayName: "points",
             currencyInternalName: "points",
             rewardEffect(){
                 let b = new Decimal(1e10).pow(new Decimal(challengeCompletions(this.layer, this.id)))
+                if (inChallenge('q', 11)) b = new Decimal(1)
                 return b
             },
             rewardDescription: "Multiply Prestige Power gain by a constant x1e10 every completion, and unlock 2 more choices and 3 new Stellar Upgrades upon first completion.",
             rewardDisplay() {
                 return format(tmp[this.layer].challenges[this.id].rewardEffect) + "x"
             },
-            canComplete() { return player.points.gte(["1e142", "1e220", "1e1000", "1e9350", "e13000", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) },
+            canComplete() { return player.points.gte(["1e142", "1e220", "1e1000", Decimal.dInf][new Decimal(challengeCompletions(this.layer, this.id))]) },
             onEnter(){
                 setBuyableAmount('g', 11, new Decimal(0))
                 setBuyableAmount('g', 12, new Decimal(0))
@@ -272,9 +281,9 @@ addLayer("p", {
     
         // Stage 3, track which main features you want to keep - milestones
         let keep = [];
-        if (hasMilestone('s', 3)) keep.push("upgrades")
-        if (hasMilestone('s', 3)) keep.push("milestones")
-        if (hasMilestone('s', 3)) keep.push("challenges")
+        if ((hasMilestone('s', 3) || hasMilestone('q', 1)) && player.p.keep) keep.push("upgrades")
+        if (hasMilestone('s', 3) && player.p.keep) keep.push("milestones")
+        if (hasMilestone('s', 3) && player.p.keep) keep.push("challenges")
     
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);

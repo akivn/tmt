@@ -31,6 +31,9 @@ addLayer("pp", {
             let base = new Decimal(3).pow(player.pp.points).minus(1)
             if(hasUpgrade('c', 13)) base = base.times(1e7)
             if(hasChallenge('p', 22)) base = base.times(tmp.p.challenges[22].rewardEffect)
+            if(player.q.buff.gte(3)) base = base.times(tmp.q.increment.effect4)
+            if(hasUpgrade('q', 13)) base = base.times(upgradeEffect('q', 13))
+            if(hasAchievement('ac', 41)) base = base.times(5)
             if(inChallenge('p', 22)) base = new Decimal(0)
             return base;
         },
@@ -82,6 +85,7 @@ addLayer("pp", {
             cost: new Decimal(17),
             effect() {
                 let effect = player.pp.power.times(player.s.points).add(1).pow(0.2)
+                effect = softcap(effect, new Decimal('1e1500'), 0.1)
                 return effect
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id)) + "x" },
@@ -93,6 +97,7 @@ addLayer("pp", {
             cost: new Decimal(29),
             effect() {
                 let effect = player.pp.power.add(1).log(10).div(6).add(1)
+                effect = softcap(effect, new Decimal(250), new Decimal(1).div(effect.log(10).add(1).pow(0.9)))
                 return effect
             },
             effectDisplay() { return "^"+format(upgradeEffect(this.layer, this.id), 3)},
