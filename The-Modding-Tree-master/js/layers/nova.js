@@ -108,6 +108,6 @@ addLayer("n", {
         // Stage 5, add back in the specific subfeatures you saved earlier
         player[this.layer].milestones.push(...keptMilestones);
     },
-    layerShown(){return hasChallenge('q', 12) ||  player[this.layer].unlocked}
+    layerShown(){return hasChallenge('q', 12)}
 }
 )

@@ -168,8 +168,8 @@ addLayer("ac", {
         },
         51: {
             name: "How to choose?",
-            tooltip: "Unlock Choices.",
-            done() { return player.c.unlocked },
+            tooltip: "Gain your first choice.",
+            done() { return player.c.points.gte(1) },
             onComplete() {
                 player[this.layer].points = player[this.layer].points.add(1)
             }
