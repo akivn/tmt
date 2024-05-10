@@ -56,7 +56,7 @@ addLayer("g", {
             if (hasUpgrade('s', 14)) base = base.pow(upgradeEffect('s', 14))
             if (inChallenge('p', 22)) base = base.pow(0.5)
             if (player.q.buff.gte(6)) base = base.pow(tmp.q.increment.effect7)
-            if (inChallenge('p', 11)) base = new Decimal(0)
+            if (inChallenge('p', 11) || inChallenge('q', 22)) base = new Decimal(0)
             if (player.p.resetTime <= 0.06) base = new Decimal(0);
             return base;
         },
@@ -75,7 +75,7 @@ addLayer("g", {
             let base = buyableEffect('g', 12)
             if (hasChallenge('p', 11)) base = base.pow(tmp.p.challenges[11].rewardEffect)
                 if (player.q.buff.gte(6)) base = base.pow(tmp.q.increment.effect7)
-            if (inChallenge('p', 11)) base = new Decimal(0)
+            if (inChallenge('p', 11) || inChallenge('q', 22)) base = new Decimal(0)
             if (player.p.resetTime <= 0.06) base = new Decimal(0);
             return base;
         },

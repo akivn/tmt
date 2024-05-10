@@ -27,6 +27,10 @@ addLayer("n", {
         let effect = new Decimal(0.04).times(player[this.layer].points).add(1)
         return effect
     },
+    effect3() {
+        let effect = new Decimal(1.04).pow(player[this.layer].points)
+        return effect
+    },
     effectDescription(){
         return "boosting Quantum gain by ^" + format(tmp[this.layer].effect) + " and raising Increment Power by " + format(tmp[this.layer].effect2)   
     },
@@ -81,6 +85,12 @@ addLayer("n", {
         0: {requirementDescription: "4 Novae",
             done() {return player.n.points.gte(4)}, // Used to determine when to give the milestone
             effectDescription: "Unlock 5 new Stellar Upgrades.",
+        },
+        1: {requirementDescription: "8 Novae",
+            done() {return player.n.points.gte(8)}, // Used to determine when to give the milestone
+            effectDescription() {
+                return `Novae also boosts Increment Limit. Currently: ^${format(tmp.n.effect3)}`
+            }
         },
     },
     tabFormat: {

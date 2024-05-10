@@ -1,6 +1,6 @@
 let modInfo = {
 	name: "The Tomozaki Game Tree",
-	id: "game",
+	id: "tomozaki",
 	author: "akivn",
 	pointsName: "Game Points",
 	modFiles: ["layers/game.js", "layers/prestige.js", "layers/prestigepower.js", "layers/stellar.js", "layers/choice.js", "layers/quantum.js", "layers/nova.js", "layers/achievement.js", "tree.js"],

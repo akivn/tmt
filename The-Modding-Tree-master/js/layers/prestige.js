@@ -23,24 +23,27 @@ addLayer("p", {
         if (hasUpgrade('pp', 21)) mult = mult.times(upgradeEffect('pp', 21))
         mult = mult.times(tmp.s.effect2)
         if (player.q.buff.gte(2)) mult = mult.times(tmp.q.increment.effect3)
+        if (hasChallenge('q', 32)) mult = mult.times(tmp.q.challenges[22].rewardEffect)
         if (hasAchievement('ac', 44)) mult = mult.times(achievementEffect('ac', 44))
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
-        return new Decimal(1)
+        let exp = new Decimal(1)
+        if (inChallenge('q', 22)) exp = new Decimal(2)
+        return exp
     },
     effect() {
         let effect = new Decimal(1).add(player[this.layer].points).pow(0.8)
         softcap(effect, new Decimal(1e85), new Decimal(0.95).pow(effect.add(10).log(10).minus(85).div(20)).add(0.05))
         if(hasChallenge('p', 12)) effect = effect.pow(tmp.p.challenges[12].rewardEffect)
-        if(inChallenge('p', 12)) effect = new Decimal(1)
+        if(inChallenge('p', 12) || inChallenge('q', 22)) effect = new Decimal(1)
         return effect
     },
     effect2() {
         let effect = new Decimal(1).add(player[this.layer].points).pow(1.4)
         softcap(effect, new Decimal(1e4), new Decimal(0.95).pow(effect.add(10).log(10).minus(4)).add(0.05))
         if(hasChallenge('p', 12)) effect = effect.pow(tmp.p.challenges[12].rewardEffect)
-        if(inChallenge('p', 12)) effect = new Decimal(1)
+        if(inChallenge('p', 12) || inChallenge('q', 22)) effect = new Decimal(1)
         return effect
     },
     effectDescription(){
@@ -267,9 +270,6 @@ addLayer("p", {
     
         // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 21, Milestones
         let keptMilestones = [];
-        for(i=0;i<1;i++){ //rows
-            if (hasMilestone(this.layer, i)) keptMilestones.push(i)
-        }
         if (hasMilestone('q', 0)) {
             for(i=0;i<2;i++){
                 if (hasMilestone(this.layer, i)) keptMilestones.push(i)

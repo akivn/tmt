@@ -34,7 +34,7 @@ addLayer("pp", {
             if(player.q.buff.gte(3)) base = base.times(tmp.q.increment.effect4)
             if(hasUpgrade('q', 13)) base = base.times(upgradeEffect('q', 13))
             if(hasAchievement('ac', 41)) base = base.times(5)
-            if(inChallenge('p', 22)) base = new Decimal(0)
+            if(inChallenge('p', 22) || inChallenge('q', 22)) base = new Decimal(0)
             return base;
         },
     },

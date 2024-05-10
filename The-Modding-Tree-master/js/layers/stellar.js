@@ -107,10 +107,22 @@ addLayer("s", {
         },
         21: {
             title: "XP Up!",
-            description: "Every Star increases the Increment Limit by ^+0.0006.",
+            description: "Your best Star count increases the Increment Limit.",
             cost: new Decimal(1485),
             effect() {
-                let power = new Decimal(0.0006).times(player.s.points).add(1)
+                let power = new Decimal(0.0006).times(player.s.best).add(1)
+                if (inChallenge('q', 12)) power = new Decimal(1)
+                return power
+            },
+            effectDisplay() { return "^"+format(upgradeEffect(this.layer, this.id), 4) },
+            unlocked() { return hasMilestone('n', 0)},
+        },
+        22: {
+            title: "Better, Faster, Stronger",
+            description: "The first 3 Increment effects get a boost based on your Stars.",
+            cost: new Decimal(2000),
+            effect() {
+                let power = new Decimal(0.005).times(player.s.best).add(1).pow(0.4)
                 if (inChallenge('q', 12)) power = new Decimal(1)
                 return power
             },

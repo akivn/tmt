@@ -45,7 +45,7 @@ addLayer("q", {
             if (hasUpgrade('q', 23)) base = base.pow(upgradeEffect('q', 23))
             if (hasUpgrade('q', 33)) base = base.pow(upgradeEffect('q', 33))
             if (player.q.resetTime <= 0.06) base = new Decimal(1)
-            if (inChallenge('q', 11) || inChallenge('q', 12) || inChallenge('q', 21)) base = new Decimal(1)
+            if (inChallenge('q', 11) || inChallenge('q', 12) || inChallenge('q', 21) || inChallenge('q', 22)) base = new Decimal(1)
             if (player.q.increment.gte(tmp.q.limit.effect)) base = new Decimal(1)
             return base;
         },
@@ -53,6 +53,7 @@ addLayer("q", {
             let powa = player.q.increment
             powa = softcap(powa, new Decimal(1), new Decimal(1).div(powa.log(10).div(60).add(1).pow(0.86)))
             if (hasChallenge('q', 11)) powa = powa.pow(tmp.q.challenges[11].rewardEffect)
+            if (hasUpgrade('s', 22)) powa = powa.pow(upgradeEffect('s', 22))
             powa = powa.pow(tmp.n.effect)
             return powa
         },
@@ -62,6 +63,7 @@ addLayer("q", {
             else powa = player.q.increment.div(10).pow(0.8)
             powa = softcap(powa, new Decimal(1), new Decimal(1).div(powa.log(10).div(30).add(1).pow(0.86)))
             if (hasChallenge('q', 11)) powa = powa.pow(tmp.q.challenges[11].rewardEffect)
+                if (hasUpgrade('s', 22)) powa = powa.pow(upgradeEffect('s', 22))
             powa = powa.pow(tmp.n.effect)
             return powa
         },
@@ -71,6 +73,7 @@ addLayer("q", {
             else powa = player.q.increment.div(239).pow(0.6)
             powa = softcap(powa, new Decimal(1), new Decimal(1).div(powa.log(10).div(10).add(1).pow(0.86)))
             if (hasChallenge('q', 11)) powa = powa.pow(tmp.q.challenges[11].rewardEffect)
+            if (hasUpgrade('s', 22)) powa = powa.pow(upgradeEffect('s', 22))
             powa = powa.pow(tmp.n.effect)
             return powa
         },
@@ -130,6 +133,7 @@ addLayer("q", {
                 }
             }
             powa = powa.pow(new Decimal(1.5).pow(chalcomp))
+            if (hasMilestone('n', 1)) powa = powa.pow(tmp.n.effect3)
             return powa
         },
         time() {
@@ -447,6 +451,34 @@ addLayer("q", {
                 return "Base " + format(tmp[this.layer].challenges[this.id].rewardEffect)
             },
             canComplete() { return player.points.gte('1e2750') },
+            onEnter(){
+                setBuyableAmount('g', 11, new Decimal(0))
+                setBuyableAmount('g', 12, new Decimal(0))
+                setBuyableAmount('g', 21, new Decimal(0))
+                setBuyableAmount('g', 22, new Decimal(0))
+                player.q.parents = new Decimal(1)
+            },
+            onExit(){
+                player.q.parents = new Decimal(0)
+            },
+        },
+        22: {
+            name: "All-in-one",
+            challengeDescription(){
+                return "Prestige Challenges 1,2,4 at once. However, Prestige gain is squared."
+            },
+            goalDescription() {
+                return '1e410 Game Points'
+            },
+            rewardEffect(){
+                let b = player.q.points.pow(32)
+                return b
+            },
+            rewardDescription: "Prestige gain is boosted by Quantum.",
+            rewardDisplay() {
+                return format(tmp[this.layer].challenges[this.id].rewardEffect) + "x" 
+            },
+            canComplete() { return player.points.gte('1e410') },
             onEnter(){
                 setBuyableAmount('g', 11, new Decimal(0))
                 setBuyableAmount('g', 12, new Decimal(0))
